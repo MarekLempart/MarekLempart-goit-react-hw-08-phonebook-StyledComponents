@@ -1,4 +1,4 @@
-import { PlusCircleOutlined } from '@ant-design/icons'; // іконки
+import { PlusCircleOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addContact } from '../../Redux/Contacts/operations';
