@@ -1,47 +1,70 @@
-import { Spiner } from 'pages/ContactList/ContactList.styled';
-import { lazy, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Navigate, Route, Routes } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify'; // для вспливаючих повідомлень
-import { refreshUser } from '../Redux/Authorization/operations'; // для обновления токена
-import { GlobalStyle } from './GlobalStyle';
-import { Layout } from './Layout/Layout';
-import { PrivateRoute } from './PrivateRoute'; // для захисту роутів
-import { RestrictedRoute } from './RestrictedRoute'; // для захисту роутів
+// App.jsx
 
+// Importowanie komponentu Spiner ze stylów ContactList
+import { Spiner } from 'pages/ContactList/ContactList.styled';
+// Importowanie funkcji lazy i hooka useEffect z react
+import { lazy, useEffect } from 'react';
+// Importowanie hooków useDispatch i useSelector z react-redux
+import { useDispatch, useSelector } from 'react-redux';
+// Importowanie komponentów Navigate, Route i Routes z react-router-dom
+import { Navigate, Route, Routes } from 'react-router-dom';
+// Importowanie komponentu ToastContainer z react-toastify do obsługi powiadomień
+import { ToastContainer } from 'react-toastify';
+// Importowanie akcji refreshUser z operacji autoryzacji do odświeżania tokena
+import { refreshUser } from '../Redux/Authorization/operations';
+// Importowanie globalnych stylów
+import { GlobalStyle } from './GlobalStyle';
+// Importowanie komponentu Layout
+import { Layout } from './Layout/Layout';
+// Importowanie komponentu PrivateRoute do ochrony prywatnych tras
+import { PrivateRoute } from './PrivateRoute';
+// Importowanie komponentu RestrictedRoute do ochrony tras z ograniczeniami
+import { RestrictedRoute } from './RestrictedRoute';
+
+// Lazy loading dla stron rejestracji, głównej, logowania i listy kontaktów
 const Register = lazy(() => import('../pages/Register/Register'));
 const Home = lazy(() => import('../pages/Home/Home'));
 const Login = lazy(() => import('../pages/Login/Login'));
 const Contactlist = lazy(() => import('../pages/ContactList/ContactList'));
 
 export const App = () => {
+  // Inicjalizacja hooka useDispatch
   const dispatch = useDispatch();
 
+  // Hook useEffect do odświeżania tokena przy załadowaniu komponentu
   useEffect(() => {
-    dispatch(refreshUser()); // для обновления токена
+    dispatch(refreshUser());
   }, [dispatch]);
 
+  // Pobieranie stanu isRefreshing ze stanu Redux
   const { isRefreshing } = useSelector(state => state.auth);
 
-  // якщо не обновляється токен, то рендеримо компоненти
+  // Jeśli token nie jest odświeżany, renderowanie komponentów
   return !isRefreshing ? (
     <>
+      {/* Definiowanie tras */}
       <Routes>
         <Route path="/" element={<Layout />}>
+          {/* Główna strona */}
           <Route index element={<Home />} />
 
+          {/* Prywatna trasa dla listy kontaktów */}
           <Route
             path="/contacts"
             element={
               <PrivateRoute component={<Contactlist />} redirectTo="/login" />
             }
           />
+
+          {/* Ograniczona trasa dla logowania */}
           <Route
             path="/login"
             element={
               <RestrictedRoute redirectTo="/contacts" component={<Login />} />
             }
           />
+
+          {/* Ograniczona trasa dla rejestracji */}
           <Route
             path="/register"
             element={
@@ -51,17 +74,20 @@ export const App = () => {
               />
             }
           />
+
+          {/* Przekierowanie dla nieznanych tras */}
           <Route path="*" element={<Navigate to="/" />} />
         </Route>
       </Routes>
 
-      {/* для вспливаючих повідомлень */}
+      {/* Kontener dla powiadomień */}
       <ToastContainer />
 
-      {/* для глобальних стилів */}
+      {/* Globalne style */}
       <GlobalStyle />
     </>
   ) : (
+    // Wyświetlanie spinnera podczas odświeżania tokena
     <Spiner />
   );
 };

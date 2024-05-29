@@ -1,3 +1,7 @@
+// Home.jsx
+
+// Importowanie stylów
+import { useSelector } from 'react-redux'; // Importowanie hooka useSelector z Redux
 import {
   HomeContactList,
   HomeEdit,
@@ -8,38 +12,36 @@ import {
   Title,
   UnderTitle,
   Wrap,
-} from './Home.styled'; // для стилів
-
-import { useSelector } from 'react-redux';
+} from './Home.styled';
 
 export default function Home() {
-  const { isLoaggedIn } = useSelector(state => state.auth); // для перевірки чи залогінений користувач
+  const { isLoaggedIn } = useSelector(state => state.auth); // Sprawdzenie, czy użytkownik jest zalogowany
 
   return (
     <Section>
-      <Title>Wellcome to you PhoneBook</Title>
-
+      <Title>Wellcome to you PhoneBook</Title> {/* Tytuł witryny */}
       <Wrap>
-        {' '}
+        {/* Kontener dla ikon i elementów interfejsu */}
         <HomeEdit /> <HomePhoneIcon />
         <HomeUserGroup />
         <HomeContactList />
       </Wrap>
-
-      {/* якщо користувач не залогінений, то виводимо підказку, якщо залогінений, також виводимо підказку */}
-      {!isLoaggedIn ? (
+      {/* Wyświetlanie odpowiedniej informacji w zależności od stanu zalogowania */}
+      {!isLoaggedIn ? ( // Jeśli użytkownik nie jest zalogowany
         <UnderTitle>
-          Please
+          Please {/* Informacja zachęcająca do rejestracji */}
           <HomeLink to="/register">Register</HomeLink>
-          or
+          or {/* Separator */}
           <HomeLink to="/login">Log in</HomeLink>
-          to be able to use your PhoneBook
+          to be able to use your PhoneBook{' '}
+          {/* Informacja o konieczności zalogowania się */}
         </UnderTitle>
       ) : (
+        // Jeśli użytkownik jest zalogowany
         <UnderTitle>
-          Go to the tab
+          Go to the tab {/* Informacja o przejściu do zakładki kontaktów */}
           <HomeLink to="/contacts">Contacts</HomeLink>
-          and manage your contacts
+          and manage your contacts {/* Informacja o zarządzaniu kontaktami */}
         </UnderTitle>
       )}
     </Section>

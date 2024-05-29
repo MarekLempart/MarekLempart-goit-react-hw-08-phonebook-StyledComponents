@@ -1,16 +1,20 @@
+// Layout.jsx
+
+// Importowanie komponentu AppBar z folderu components/AppBar
 import { AppBar } from 'components/AppBar/AppBar';
-import { Suspense } from 'react'; // для лінивої загрузки
+// Importowanie funkcji Suspense z React do obsługi leniwej ładowania komponentów
+import { Suspense } from 'react';
+// Importowanie komponentu Outlet z react-router-dom do renderowania zagnieżdżonych tras
 import { Outlet } from 'react-router-dom';
 
 export const Layout = () => {
   return (
     <>
-      {' '}
-      {/* для того щоб AppBar не перекривав контент */}
+      {/* Komentarz: Przestrzeń przed AppBar, aby nie zakrywał treści */}
       <AppBar />
-      {/* для лінивої загрузки */}
+      {/* Komentarz: Suspense do obsługi leniwej ładowania */}
       <Suspense fallback={null}>
-        <Outlet />
+        <Outlet /> {/* Komentarz: Outlet renderuje zagnieżdżone trasy */}
       </Suspense>
     </>
   );

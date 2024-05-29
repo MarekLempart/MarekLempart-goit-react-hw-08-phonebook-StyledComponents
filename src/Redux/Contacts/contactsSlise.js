@@ -1,41 +1,48 @@
+// contactsSlise.js
+
 import { createSlice } from '@reduxjs/toolkit';
 import {
   addContact,
   deleteContact,
   fetchContacts,
   redactContatc,
-} from './operations';
+} from './operations'; // Importuje operacje związane z kontaktami
 
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { logOut } from '../Authorization/operations';
+import { toast } from 'react-toastify'; // Importuje funkcję do wyświetlania powiadomień
+import 'react-toastify/dist/ReactToastify.css'; // Importuje style CSS dla powiadomień
+import { logOut } from '../Authorization/operations'; // Importuje operację wylogowania
 
+// Funkcja pomocnicza ustawiająca stan na "ładowanie"
 const handlePending = state => {
   state.isLoading = true;
   state.error = null;
 };
 
+// Funkcja pomocnicza obsługująca odrzucone akcje
 const handleRejected = (state, action) => {
   state.isLoading = false;
   state.error = action.payload;
 
+  // Wyświetla komunikat o błędzie za pomocą toast
   toast.error(
     `${action.payload}` === 'Network Error'
       ? `${action.payload}`
-      : 'Something went wrong.Check your data and try again'
+      : 'Coś poszło nie tak. Sprawdź swoje dane i spróbuj ponownie'
   );
 };
 
-const contactSlise = createSlice({
-  name: 'contacts',
+// Tworzy slice stanu dla kontaktów
+const contactSlice = createSlice({
+  name: 'contacts', // Nazwa slice'a
   initialState: {
-    items: [],
-    isLoading: false,
-    error: null,
+    items: [], // Tablica przechowująca kontakty
+    isLoading: false, // Flaga informująca o ładowaniu danych
+    error: null, // Błąd w przypadku problemów z pobieraniem danych
   },
 
   extraReducers: builder => {
     builder
+      // Obsługa pobierania kontaktów
       .addCase(fetchContacts.pending, handlePending)
       .addCase(fetchContacts.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -44,6 +51,7 @@ const contactSlise = createSlice({
       })
       .addCase(fetchContacts.rejected, handleRejected)
 
+      // Obsługa usuwania kontaktów
       .addCase(deleteContact.pending, handlePending)
       .addCase(deleteContact.fulfilled, (state, action) => {
         const index = state.items.findIndex(
@@ -55,6 +63,7 @@ const contactSlise = createSlice({
       })
       .addCase(deleteContact.rejected, handleRejected)
 
+      // Obsługa dodawania kontaktów
       .addCase(addContact.pending, handlePending)
       .addCase(addContact.fulfilled, (state, action) => {
         state.items.unshift(action.payload);
@@ -63,6 +72,7 @@ const contactSlise = createSlice({
       })
       .addCase(addContact.rejected, handleRejected)
 
+      // Obsługa edycji kontaktów
       .addCase(redactContatc.pending, handlePending)
       .addCase(redactContatc.fulfilled, (state, action) => {
         const index = state.items.findIndex(
@@ -74,6 +84,8 @@ const contactSlise = createSlice({
         state.error = null;
       })
       .addCase(redactContatc.rejected, handleRejected)
+
+      // Obsługa wylogowania
       .addCase(logOut.fulfilled, state => {
         state.items = [];
         state.error = null;
@@ -82,4 +94,5 @@ const contactSlise = createSlice({
   },
 });
 
-export const contactsReduser = contactSlise.reducer;
+// Eksportuje reducer dla kontaktów
+export const contactsReducer = contactSlice.reducer;

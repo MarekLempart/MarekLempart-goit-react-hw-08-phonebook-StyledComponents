@@ -1,7 +1,14 @@
+// ContactForm.jsx
+
+// Importowanie ikony PlusCircleOutlined z biblioteki @ant-design/icons
 import { PlusCircleOutlined } from '@ant-design/icons';
+// Importowanie hooka useState z React do zarządzania stanem komponentu
 import { useState } from 'react';
+// Importowanie hooków useDispatch i useSelector z react-redux do pobierania stanu z Redux store i wysyłania akcji
 import { useDispatch, useSelector } from 'react-redux';
+// Importowanie akcji addContact z pliku operations w folderze Contacts
 import { addContact } from '../../Redux/Contacts/operations';
+// Importowanie stylizowanych komponentów z pliku ContactForm.styled
 import {
   AddModal,
   AddModalBtn,
@@ -10,52 +17,54 @@ import {
   OpenAddModal,
   PhoneIcon,
   UserIcon,
-} from './ContactForm.styled'; // стилі
+} from './ContactForm.styled';
 
 export const ContactForm = () => {
-  const [open, setOpen] = useState(false); // стейт для відкриття модалки
-  const [form] = FormWrap.useForm();
-  const currentContacts = useSelector(state => state.contacts.items); // масив контактів
-  const loader = useSelector(state => state.contacts.isLoading);
-  const dispatch = useDispatch();
+  const [open, setOpen] = useState(false); // Stan dla otwierania modala
+  const [form] = FormWrap.useForm(); // Pobieranie funkcji do zarządzania formularzem
+  const currentContacts = useSelector(state => state.contacts.items); // Pobieranie listy kontaktów z Redux store
+  const loader = useSelector(state => state.contacts.isLoading); // Pobieranie stanu ładowania z Redux store
+  const dispatch = useDispatch(); // Hook do wysyłania akcji do Redux store
 
+  // Funkcja do wyświetlania modala
   const showModal = () => {
-    form.resetFields(); // очищаємо форму
-    setOpen(true); // відкриваємо модалку
+    form.resetFields(); // Czyszczenie formularza
+    setOpen(true); // Otwieranie modala
   };
 
+  // Funkcja do obsługi submit formularza
   const submit = value => {
-    // форматуємо номер телефону
+    // Funkcja do formatowania numeru telefonu
     const formatTel = () => {
-      const number = value.number;
-      const phoneLength = number.length;
+      const number = value.number; // Pobieranie numeru telefonu z wartości formularza
+      const phoneLength = number.length; // Długość numeru telefonu
 
-      // перевіряємо чи номер телефону відповідає формату
+      // Sprawdzanie czy numer telefonu jest krótszy niż 7 cyfr
       if (phoneLength < 7) {
-        return `(${number.slice(0, 3)}) ${number.slice(3)}`; // якщо менше 7 то виводимо тільки перші 3 цифри
+        return `(${number.slice(0, 3)}) ${number.slice(3)}`; // Formatowanie numeru w przypadku krótszego niż 7 cyfr
       }
 
-      // якщо більше 7 то виводимо 3 цифри, потім 3 і потім 4
+      // Formatowanie numeru w przypadku dłuższego niż 7 cyfr
       return `(${number.slice(0, 3)}) ${number.slice(3, 6)}-${number.slice(
         6,
         10
       )}`;
     };
 
-    const newContact = { name: value.name, number: formatTel() }; // створюємо новий контакт
-    const newContactName = newContact.name.toLowerCase();
+    const newContact = { name: value.name, number: formatTel() }; // Tworzenie nowego kontaktu
+    const newContactName = newContact.name.toLowerCase(); // Zamiana nazwy kontaktu na małe litery
 
-    // перевіряємо чи такий контакт вже є в списку
+    // Sprawdzanie czy kontakt o takiej nazwie już istnieje
     if (
       currentContacts.find(
         contact => contact.name.toLowerCase() === newContactName
       )
     ) {
-      alert(`${newContact.name} is already in contact`); // якщо є то виводимо повідомлення
+      alert(`${newContact.name} is already in contact`); // Wyświetlanie alertu jeśli kontakt już istnieje
     } else {
-      dispatch(addContact(newContact)); // якщо немає то додаємо контакт
+      dispatch(addContact(newContact)); // Wysyłanie akcji dodania nowego kontaktu do Redux store
 
-      // якщо контакт додано то очищаємо форму і закриваємо модалку
+      // Jeśli kontakt został dodany, czyszczenie formularza i zamykanie modala
       if (!loader) {
         form.resetFields();
         setOpen(false);
@@ -65,21 +74,23 @@ export const ContactForm = () => {
 
   return (
     <>
+      {/* Przycisk do otwierania modala */}
       <OpenAddModal
         type="primary"
         onClick={showModal}
         title="add new contact"
-        size={'large'} // розмір кнопки
+        size={'large'} // Rozmiar przycisku
       >
         <PlusCircleOutlined />
         Add contact
       </OpenAddModal>
 
+      {/* Modal do dodawania nowego kontaktu */}
       <AddModal
         footer={null}
         title="Add new contact"
         open={open}
-        onCancel={() => setOpen(false)}
+        onCancel={() => setOpen(false)} // Funkcja do zamykania modala
       >
         <FormWrap
           form={form}
@@ -87,7 +98,7 @@ export const ContactForm = () => {
           initialValues={{
             remember: true,
           }}
-          onFinish={submit}
+          onFinish={submit} // Funkcja do obsługi submit formularza
         >
           <FormWrap.Item
             name="name"
@@ -100,9 +111,9 @@ export const ContactForm = () => {
             ]}
           >
             <InputForm
-              prefix={<UserIcon />}
+              prefix={<UserIcon />} // Ikona użytkownika
               placeholder="Name"
-              pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+              pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$" // Wzór do walidacji nazwy
             />
           </FormWrap.Item>
 
@@ -117,10 +128,10 @@ export const ContactForm = () => {
             ]}
           >
             <InputForm
-              prefix={<PhoneIcon />}
+              prefix={<PhoneIcon />} // Ikona telefonu
               type=""
               placeholder="Number"
-              pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+              pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}" // Wzór do walidacji numeru telefonu
             />
           </FormWrap.Item>
 

@@ -1,18 +1,22 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { register, loginization, logOut, refreshUser } from './operations';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// authSlice.js
 
-// це для того щоб виводити помилки в тостах
+import { createSlice } from '@reduxjs/toolkit'; // Import narzędzia createSlice z Redux Toolkit
+import { toast } from 'react-toastify'; // Import modułu toast do wyświetlania powiadomień użytkownikowi
+import 'react-toastify/dist/ReactToastify.css'; // Import styli dla modułu toast
+import { logOut, loginization, refreshUser, register } from './operations'; // Import operacji związanych z uwierzytelnianiem
+
+// Funkcja obsługująca stan w przypadku oczekiwania na zakończenie operacji
 const handlePending = state => {
-  state.isLoading = true;
-  state.error = null;
+  state.isLoading = true; // Ustawienie isLoading na true
+  state.error = null; // Wyzerowanie error
 };
 
+// Funkcja obsługująca stan w przypadku odrzucenia operacji z błędem
 const handleRejected = (state, action) => {
-  state.isLoading = false;
-  state.error = action.payload;
+  state.isLoading = false; // Ustawienie isLoading na false
+  state.error = action.payload; // Ustawienie error na otrzymany komunikat błędu
 
+  // Wyświetlenie powiadomienia typu error
   toast.error(
     `${action.payload}` === 'Network Error'
       ? `${action.payload}`
@@ -20,59 +24,70 @@ const handleRejected = (state, action) => {
   );
 };
 
-const authSlise = createSlice({
-  name: 'auth',
+// Definicja slice'a authSlice
+const authSlice = createSlice({
+  name: 'auth', // Nazwa slice'a
   initialState: {
-    user: { email: null, password: null },
-    token: null,
-    isLoaggedIn: false,
-    isRefreshing: false,
-    error: null,
-    isLoading: false,
+    user: { email: null, password: null }, // Obiekt zawierający dane użytkownika
+    token: null, // Token użytkownika
+    isLoaggedIn: false, // Flaga oznaczająca, czy użytkownik jest zalogowany
+    isRefreshing: false, // Flaga oznaczająca, czy trwa odświeżanie danych użytkownika
+    error: null, // Błąd
+    isLoading: false, // Flaga oznaczająca, czy trwa ładowanie
   },
   extraReducers: builder => {
     builder
-      .addCase(register.pending, handlePending)
+      // Obsługa akcji związanej z rejestracją użytkownika
+      .addCase(register.pending, handlePending) // Obsługa oczekiwania na zakończenie operacji rejestracji
       .addCase(register.fulfilled, (state, action) => {
-        state.token = action.payload.token;
-        state.user = action.payload.user;
-        state.isLoaggedIn = true;
-        state.isLoading = false;
+        // Obsługa pomyślnego zakończenia operacji rejestracji
+        state.token = action.payload.token; // Ustawienie tokenu
+        state.user = action.payload.user; // Ustawienie danych użytkownika
+        state.isLoaggedIn = true; // Oznaczenie użytkownika jako zalogowanego
+        state.isLoading = false; // Zakończenie ładowania
       })
-      .addCase(register.rejected, handleRejected)
+      .addCase(register.rejected, handleRejected) // Obsługa odrzucenia operacji rejestracji z błędem
 
-      .addCase(loginization.pending, handlePending)
+      // Obsługa akcji związanej z logowaniem użytkownika
+      .addCase(loginization.pending, handlePending) // Obsługa oczekiwania na zakończenie operacji logowania
       .addCase(loginization.fulfilled, (state, action) => {
-        state.token = action.payload.token;
-        state.user = action.payload.user;
-        state.isLoaggedIn = true;
-        state.isLoading = false;
+        // Obsługa pomyślnego zakończenia operacji logowania
+        state.token = action.payload.token; // Ustawienie tokenu
+        state.user = action.payload.user; // Ustawienie danych użytkownika
+        state.isLoaggedIn = true; // Oznaczenie użytkownika jako zalogowanego
+        state.isLoading = false; // Zakończenie ładowania
       })
-      .addCase(loginization.rejected, handleRejected)
+      .addCase(loginization.rejected, handleRejected) // Obsługa odrzucenia operacji logowania z błędem
 
-      .addCase(logOut.pending, handlePending)
+      // Obsługa akcji wylogowania użytkownika
+      .addCase(logOut.pending, handlePending) // Obsługa oczekiwania na zakończenie operacji wylogowania
       .addCase(logOut.fulfilled, state => {
-        state.user = { email: null, password: null };
-        state.token = null;
-        state.isLoaggedIn = false;
-        state.isRefreshing = false;
-        state.error = null;
-        state.isLoading = false;
+        // Obsługa pomyślnego zakończenia operacji wylogowania
+        state.user = { email: null, password: null }; // Zresetowanie danych użytkownika
+        state.token = null; // Usunięcie tokenu
+        state.isLoaggedIn = false; // Oznaczenie użytkownika jako wylogowanego
+        state.isRefreshing = false; // Zakończenie odświeżania
+        state.error = null; // Wyzerowanie błędu
+        state.isLoading = false; // Zakończenie ładowania
       })
-      .addCase(logOut.rejected, handleRejected)
+      .addCase(logOut.rejected, handleRejected) // Obsługa odrzucenia operacji wylogowania z błędem
 
+      // Obsługa akcji odświeżenia danych użytkownika
       .addCase(refreshUser.pending, state => {
-        state.isRefreshing = true;
+        // Obsługa oczekiwania na zakończenie operacji odświeżenia danych użytkownika
+        state.isRefreshing = true; // Ustawienie flagi odświeżania
       })
       .addCase(refreshUser.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.isLoaggedIn = true;
-        state.isRefreshing = false;
+        // Obsługa pomyślnego zakończenia operacji odświeżenia danych użytkownika
+        state.user = action.payload; // Ustawienie danych użytkownika
+        state.isLoaggedIn = true; // Oznaczenie użytkownika jako zalogowanego
+        state.isRefreshing = false; // Zakończenie odświeżania
       })
       .addCase(refreshUser.rejected, (state, action) => {
-        state.isRefreshing = false;
+        // Obsługa odrzucenia operacji odświeżenia danych użytkownika z błędem
+        state.isRefreshing = false; // Zakończenie odświeżania
       });
   },
 });
 
-export const authReduser = authSlise.reducer;
+export const authReducer = authSlice.reducer; // Eksport reducer'a z slice'a
