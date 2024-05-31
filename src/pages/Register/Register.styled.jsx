@@ -1,7 +1,9 @@
-import styled from 'styled-components';
+// Register.styled.jsx
+
+import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 
 export const Label = styled(Form.Item)`
   label {

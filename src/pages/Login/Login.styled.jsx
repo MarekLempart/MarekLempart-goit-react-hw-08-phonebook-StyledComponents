@@ -1,6 +1,8 @@
-import styled from 'styled-components';
-import { Button, Form, Input } from 'antd';
+// Login.styled.css
+
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
+import { Button, Form, Input } from 'antd';
+import styled from 'styled-components';
 
 export const FormWrap = styled(Form)`
   width: 300px;

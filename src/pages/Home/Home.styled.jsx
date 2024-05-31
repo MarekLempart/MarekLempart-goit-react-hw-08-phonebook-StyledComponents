@@ -1,15 +1,15 @@
-import styled, { keyframes } from 'styled-components';
 import {
-  UsergroupAddOutlined,
+  ContactsOutlined,
   EditOutlined,
   PhoneOutlined,
-  ContactsOutlined,
+  UsergroupAddOutlined,
 } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
 import { fadeInLeftBig } from 'react-animations';
+import { Link } from 'react-router-dom';
+import styled, { keyframes } from 'styled-components';
 import img from '../../img/exampleList.png';
 
-const fadeAnimation = keyframes`${fadeInLeftBig}`; // для анімації
+const fadeAnimation = keyframes`${fadeInLeftBig}`;
 
 export const Title = styled.h1`
   text-align: center;
